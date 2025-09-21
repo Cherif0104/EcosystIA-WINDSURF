@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from './contexts/AuthContext';
+import { QueryProvider } from './providers/QueryProvider';
+import { useAuth, AuthProvider } from './contexts/AuthContext';
+import { useLocalization, LocalizationProvider } from './contexts/LocalizationContext';
+import ToastComponent from './components/common/Toast';
+import env from './config/environment';
+
+// Import des données mock (à supprimer progressivement)
 import { mockCourses, mockJobs, mockProjects, mockGoals, mockContacts, mockDocuments, mockAllUsers, mockTimeLogs, mockLeaveRequests, mockInvoices, mockExpenses, mockRecurringInvoices, mockRecurringExpenses, mockBudgets, mockMeetings } from './constants/data';
 import { Course, Job, Project, Objective, Contact, Document, User, Role, TimeLog, LeaveRequest, Invoice, Expense, AppNotification, RecurringInvoice, RecurringExpense, RecurrenceFrequency, Budget, Meeting } from './types';
-import { useLocalization } from './contexts/LocalizationContext';
 
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -30,7 +35,8 @@ import LeaveManagement from './components/LeaveManagement';
 import Finance from './components/Finance';
 
 
-const App: React.FC = () => {
+// Composant principal de l'application
+const AppContent: React.FC = () => {
   const { user, login } = useAuth();
   const { t } = useLocalization();
   const [authView, setAuthView] = useState<'login' | 'signup'>('login');
@@ -539,7 +545,21 @@ const App: React.FC = () => {
       </div>
        {isSidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black opacity-50 z-40 lg:hidden"></div>}
        <AIAgent currentView={currentView} />
+       <ToastComponent />
     </div>
+  );
+};
+
+// Composant App avec tous les providers
+const App: React.FC = () => {
+  return (
+    <QueryProvider>
+      <LocalizationProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </LocalizationProvider>
+    </QueryProvider>
   );
 };
 

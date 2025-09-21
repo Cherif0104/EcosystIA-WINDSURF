@@ -77,3 +77,28 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismis
     </div>
   );
 };
+
+// Composant Toast par défaut pour une utilisation simple
+const ToastComponent: React.FC = () => {
+  const [toasts, setToasts] = useState<ToastType[]>([]);
+
+  // Fonction globale pour afficher des toasts
+  useEffect(() => {
+    (window as any).showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+      const newToast: ToastType = {
+        id: Date.now(),
+        message,
+        type,
+      };
+      setToasts(prev => [...prev, newToast]);
+    };
+  }, []);
+
+  const handleDismiss = (id: number) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  return <ToastContainer toasts={toasts} onDismiss={handleDismiss} />;
+};
+
+export default ToastComponent;

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérifiez votre compte EcosystIA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        .message {
+            color: #4a5568;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        .btn-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .security-info {
+            background-color: #f7fafc;
+            border-left: 4px solid #4299e1;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        .security-info h3 {
+            color: #2b6cb0;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .security-info p {
+            color: #4a5568;
+            margin: 0;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #f8fafc;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer p {
+            color: #718096;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #718096;
+            font-size: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 0 10px;
+            }
+            .header, .content, .footer {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 EcosystIA</h1>
+            <p>Plateforme d'Innovation et de Formation</p>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                Bonjour {{ user.get_full_name }},
+            </div>
+            
+            <div class="message">
+                <p>Bienvenue sur <strong>EcosystIA</strong> ! Nous sommes ravis de vous compter parmi nous.</p>
+                
+                <p>Pour finaliser votre inscription et accéder à toutes les fonctionnalités de notre plateforme, veuillez vérifier votre adresse email en cliquant sur le bouton ci-dessous :</p>
+            </div>
+            
+            <div class="btn-container">
+                <a href="{{ verification_url }}" class="btn">
+                    ✅ Vérifier mon compte
+                </a>
+            </div>
+            
+            <div class="security-info">
+                <h3>🔒 Informations de sécurité</h3>
+                <p>Ce lien est valide pendant <strong>24 heures</strong>. Si vous n'avez pas créé de compte sur EcosystIA, vous pouvez ignorer cet email en toute sécurité.</p>
+            </div>
+            
+            <div class="message">
+                <p>Une fois votre compte vérifié, vous pourrez :</p>
+                <ul style="color: #4a5568; padding-left: 20px;">
+                    <li>📋 Gérer vos projets et collaborer avec vos équipes</li>
+                    <li>🎓 Accéder à nos formations et cours en ligne</li>
+                    <li>🤝 Utiliser notre CRM pour gérer vos contacts</li>
+                    <li>💰 Suivre vos finances et budgets</li>
+                    <li>🤖 Bénéficier de notre assistant IA</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>EcosystIA</strong> - Votre partenaire pour l'innovation</p>
+            <p>📍 Dakar, Sénégal | 📧 contact@ecosystia.org</p>
+            
+            <div class="social-links">
+                <a href="#" title="LinkedIn">💼</a>
+                <a href="#" title="Twitter">🐦</a>
+                <a href="#" title="Facebook">📘</a>
+                <a href="#" title="Instagram">📷</a>
+            </div>
+            
+            <p style="font-size: 12px; color: #a0aec0; margin-top: 20px;">
+                Cet email a été envoyé automatiquement. Merci de ne pas répondre à cette adresse.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

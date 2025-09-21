@@ -114,7 +114,7 @@ const GenAILab: React.FC = () => {
                                     <div className="mt-4 text-center">
                                         <a
                                             href={generatedImage}
-                                            download="senegel-workflow-generated-image.png"
+                                            download="ecosystia-generated-image.png"
                                             className="inline-flex items-center bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
                                         >
                                             <i className="fas fa-download mr-2"></i>

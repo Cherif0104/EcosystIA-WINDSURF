@@ -1,0 +1,358 @@
+### Tests API EcosystIA - Phase 1 Complétée ✅
+### Authentication, Projects, Courses, CRM
+
+@baseUrl = http://localhost:8000/api/v1
+@contentType = application/json
+
+### ========================================
+### 🔐 AUTHENTICATION API TESTS
+### ========================================
+
+### 1. Inscription d'un utilisateur
+POST {{baseUrl}}/auth/register/
+Content-Type: {{contentType}}
+
+{
+  "email": "test@ecosystia.org",
+  "username": "testuser",
+  "first_name": "Test",
+  "last_name": "User",
+  "password": "TestPassword123!",
+  "password_confirm": "TestPassword123!",
+  "role": "entrepreneur",
+  "phone": "+221701234567",
+  "location": "Dakar, Sénégal"
+}
+
+### 2. Connexion utilisateur (récupérer le token)
+POST {{baseUrl}}/auth/login/
+Content-Type: {{contentType}}
+
+{
+  "email": "test@ecosystia.org",
+  "password": "TestPassword123!"
+}
+
+### 3. Vérification du token (remplacer TOKEN par le token obtenu)
+POST {{baseUrl}}/auth/token/verify/
+Content-Type: {{contentType}}
+
+{
+  "access_token": "TOKEN_HERE"
+}
+
+### 4. Récupérer le profil utilisateur
+GET {{baseUrl}}/auth/profile/
+Authorization: Bearer TOKEN_HERE
+
+### 5. Mettre à jour le profil
+PATCH {{baseUrl}}/auth/profile/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "first_name": "Test Updated",
+  "skills": ["Django", "React", "AI"],
+  "profile": {
+    "bio": "Développeur passionné par l'IA",
+    "company": "EcosystIA",
+    "job_title": "Full Stack Developer"
+  }
+}
+
+### ========================================
+### 📋 PROJECTS API TESTS
+### ========================================
+
+### 6. Créer un projet
+POST {{baseUrl}}/projects/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "title": "Plateforme EcosystIA",
+  "description": "Développement de la plateforme complète EcosystIA avec toutes ses fonctionnalités",
+  "status": "In Progress",
+  "priority": "High",
+  "start_date": "2024-01-01",
+  "due_date": "2024-12-31",
+  "budget": 50000.00,
+  "progress": 25,
+  "team_member_ids": []
+}
+
+### 7. Lister tous les projets
+GET {{baseUrl}}/projects/
+Authorization: Bearer TOKEN_HERE
+
+### 8. Récupérer un projet spécifique (remplacer 1 par l'ID du projet)
+GET {{baseUrl}}/projects/1/
+Authorization: Bearer TOKEN_HERE
+
+### 9. Créer une tâche dans un projet
+POST {{baseUrl}}/projects/1/tasks/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "title": "Créer les APIs REST",
+  "description": "Développer toutes les APIs manquantes pour le backend",
+  "status": "In Progress",
+  "priority": "High",
+  "due_date": "2024-02-15T10:00:00Z",
+  "estimated_time": 480,
+  "tags": ["backend", "api", "development"]
+}
+
+### 10. Lister les tâches d'un projet
+GET {{baseUrl}}/projects/1/tasks/
+Authorization: Bearer TOKEN_HERE
+
+### 11. Statistiques des projets
+GET {{baseUrl}}/projects/stats/
+Authorization: Bearer TOKEN_HERE
+
+### 12. Dashboard des projets
+GET {{baseUrl}}/projects/dashboard/
+Authorization: Bearer TOKEN_HERE
+
+### ========================================
+### 📚 COURSES API TESTS
+### ========================================
+
+### 13. Créer un cours
+POST {{baseUrl}}/courses/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "title": "Introduction au Développement Web avec Django",
+  "description": "Apprenez à créer des applications web modernes avec Django REST Framework",
+  "duration": "8 semaines",
+  "difficulty": "Intermediate",
+  "status": "Published",
+  "icon": "fas fa-code",
+  "thumbnail": "https://example.com/django-course.jpg",
+  "tags": ["Django", "Python", "Web Development", "API"],
+  "prerequisites": "Connaissance de base en Python"
+}
+
+### 14. Lister tous les cours (publics)
+GET {{baseUrl}}/courses/
+
+### 15. Récupérer un cours spécifique
+GET {{baseUrl}}/courses/1/
+
+### 16. S'inscrire à un cours
+POST {{baseUrl}}/courses/1/enroll/
+Authorization: Bearer TOKEN_HERE
+
+### 17. Créer un module dans un cours
+POST {{baseUrl}}/courses/1/modules/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "title": "Introduction à Django",
+  "description": "Les bases du framework Django",
+  "order": 1,
+  "is_published": true
+}
+
+### 18. Créer une leçon dans un module
+POST {{baseUrl}}/courses/modules/1/lessons/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "title": "Installation et configuration de Django",
+  "type": "video",
+  "duration": "15 minutes",
+  "order": 1,
+  "content": "Dans cette leçon, nous allons apprendre à installer Django...",
+  "video_url": "https://youtube.com/watch?v=example",
+  "is_published": true
+}
+
+### 19. Marquer une leçon comme complétée
+POST {{baseUrl}}/courses/lessons/progress/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "lesson_id": 1,
+  "completed": true
+}
+
+### 20. Mes inscriptions aux cours
+GET {{baseUrl}}/courses/enrollments/
+Authorization: Bearer TOKEN_HERE
+
+### 21. Noter un cours
+POST {{baseUrl}}/courses/1/rate/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "rating": 5,
+  "feedback": "Excellent cours, très bien structuré !"
+}
+
+### ========================================
+### 🤝 CRM API TESTS
+### ========================================
+
+### 22. Créer un contact
+POST {{baseUrl}}/crm/contacts/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "name": "Jean Dupont",
+  "work_email": "jean.dupont@entreprise.com",
+  "company": "Tech Solutions SARL",
+  "job_title": "Directeur Technique",
+  "status": "Lead",
+  "source": "Website",
+  "office_phone": "+221338123456",
+  "mobile_phone": "+221701234567",
+  "city": "Dakar",
+  "country": "Sénégal",
+  "notes": "Intéressé par nos solutions de formation en ligne",
+  "tags": ["formation", "tech", "priorité-haute"]
+}
+
+### 23. Lister tous les contacts
+GET {{baseUrl}}/crm/contacts/
+Authorization: Bearer TOKEN_HERE
+
+### 24. Récupérer un contact spécifique
+GET {{baseUrl}}/crm/contacts/1/
+Authorization: Bearer TOKEN_HERE
+
+### 25. Créer une interaction avec un contact
+POST {{baseUrl}}/crm/contacts/1/interactions/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "type": "Call",
+  "result": "Positive",
+  "subject": "Discussion sur les besoins en formation",
+  "description": "Appel très productif. Le client est intéressé par nos formations Django et React.",
+  "duration": 45,
+  "follow_up_date": "2024-02-20T14:00:00Z",
+  "follow_up_notes": "Préparer une proposition commerciale détaillée"
+}
+
+### 26. Créer une opportunité
+POST {{baseUrl}}/crm/contacts/1/deals/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "name": "Formation équipe Tech Solutions",
+  "description": "Formation complète Django + React pour 10 développeurs",
+  "stage": "Qualified",
+  "value": 2500000.00,
+  "currency": "XOF",
+  "probability": 75,
+  "expected_close_date": "2024-03-15"
+}
+
+### 27. Lister toutes les opportunités
+GET {{baseUrl}}/crm/deals/
+Authorization: Bearer TOKEN_HERE
+
+### 28. Statistiques CRM
+GET {{baseUrl}}/crm/contacts/stats/
+Authorization: Bearer TOKEN_HERE
+
+### 29. Dashboard CRM
+GET {{baseUrl}}/crm/dashboard/
+Authorization: Bearer TOKEN_HERE
+
+### 30. Action en masse sur les contacts
+POST {{baseUrl}}/crm/contacts/bulk-action/
+Authorization: Bearer TOKEN_HERE
+Content-Type: {{contentType}}
+
+{
+  "contact_ids": [1],
+  "action": "update_status",
+  "status": "Prospect"
+}
+
+### ========================================
+### 🔍 RECHERCHES ET FILTRES
+### ========================================
+
+### 31. Rechercher des projets
+GET {{baseUrl}}/projects/?search=API&status=In Progress&priority=High
+Authorization: Bearer TOKEN_HERE
+
+### 32. Filtrer des cours
+GET {{baseUrl}}/courses/?difficulty=Intermediate&search=Django
+
+### 33. Filtrer des contacts CRM
+GET {{baseUrl}}/crm/contacts/?status=Lead&source=Website&city=Dakar
+Authorization: Bearer TOKEN_HERE
+
+### 34. Mes tâches assignées
+GET {{baseUrl}}/projects/tasks/my/?status=In Progress&priority=High
+Authorization: Bearer TOKEN_HERE
+
+### ========================================
+### 📊 ANALYTICS ET STATISTIQUES
+### ========================================
+
+### 35. Statistiques globales des projets
+GET {{baseUrl}}/projects/stats/
+Authorization: Bearer TOKEN_HERE
+
+### 36. Statistiques des cours
+GET {{baseUrl}}/courses/stats/
+Authorization: Bearer TOKEN_HERE
+
+### 37. Statistiques CRM
+GET {{baseUrl}}/crm/contacts/stats/
+Authorization: Bearer TOKEN_HERE
+
+### ========================================
+### 🚀 TESTS DE PERFORMANCE
+### ========================================
+
+### 38. Test pagination - Projets
+GET {{baseUrl}}/projects/?page=1&page_size=10
+Authorization: Bearer TOKEN_HERE
+
+### 39. Test pagination - Cours
+GET {{baseUrl}}/courses/?page=1&page_size=20
+
+### 40. Test pagination - Contacts
+GET {{baseUrl}}/crm/contacts/?page=1&page_size=15
+Authorization: Bearer TOKEN_HERE
+
+### ========================================
+### ✅ TESTS COMPLETS - PHASE 1 TERMINÉE !
+### ========================================
+### 
+### APIs créées et testées :
+### ✅ Authentication (inscription, connexion, profil)
+### ✅ Projects (projets, tâches, équipes, risques)
+### ✅ Courses (cours, modules, leçons, inscriptions)
+### ✅ CRM (contacts, interactions, opportunités)
+### 
+### Fonctionnalités implémentées :
+### ✅ JWT Authentication avec refresh tokens
+### ✅ CRUD complet pour tous les modèles
+### ✅ Filtres et recherche avancés
+### ✅ Pagination automatique
+### ✅ Permissions et sécurité
+### ✅ Statistiques et analytics
+### ✅ Import/Export de données
+### ✅ Actions en masse
+### ✅ Suivi de progression
+### ✅ Notifications d'activité
+### 
+### Prêt pour la Phase 2 ! 🚀

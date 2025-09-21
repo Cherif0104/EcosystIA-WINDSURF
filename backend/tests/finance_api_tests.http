@@ -1,0 +1,415 @@
+### Tests API Finance EcosystIA - APIs REST Réelles 💰
+### Gestion complète : Factures, Dépenses, Budgets, Paiements
+
+@baseUrl = http://localhost:8000/api/v1
+@contentType = application/json
+@authToken = YOUR_JWT_TOKEN_HERE
+
+### ========================================
+### 💰 FINANCE API - TESTS RÉELS
+### ========================================
+
+### 1. Créer une facture réelle
+POST {{baseUrl}}/finance/invoices/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "client_name": "SONATEL Sénégal",
+  "client_email": "facturation@sonatel.sn",
+  "client_address": "46 Boulevard de la République, Dakar, Sénégal",
+  "amount": 2500000.00,
+  "tax_amount": 450000.00,
+  "total_amount": 2950000.00,
+  "currency": "XOF",
+  "status": "Draft",
+  "issue_date": "2024-09-20",
+  "due_date": "2024-10-20",
+  "description": "Formation Django REST Framework pour 15 développeurs",
+  "terms_conditions": "Paiement à 30 jours. Pénalités de retard : 2% par mois.",
+  "notes": "Formation sur site avec certification"
+}
+
+### 2. Lister toutes les factures
+GET {{baseUrl}}/finance/invoices/
+Authorization: Bearer {{authToken}}
+
+### 3. Récupérer une facture spécifique
+GET {{baseUrl}}/finance/invoices/1/
+Authorization: Bearer {{authToken}}
+
+### 4. Enregistrer un paiement sur une facture
+POST {{baseUrl}}/finance/invoices/1/payment/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "amount": 1000000.00,
+  "method": "Bank Transfer",
+  "payment_date": "2024-09-25",
+  "reference_number": "VIR-20240925-001"
+}
+
+### 5. Générer le PDF d'une facture
+GET {{baseUrl}}/finance/invoices/1/pdf/
+Authorization: Bearer {{authToken}}
+
+### 6. Envoyer un rappel de paiement
+POST {{baseUrl}}/finance/invoices/1/reminder/
+Authorization: Bearer {{authToken}}
+
+### 7. Créer une dépense réelle
+POST {{baseUrl}}/finance/expenses/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "category": "Software",
+  "description": "Licence annuelle GitHub Enterprise",
+  "amount": 180000.00,
+  "currency": "XOF",
+  "status": "Unpaid",
+  "date": "2024-09-20",
+  "due_date": "2024-10-05",
+  "vendor": "GitHub Inc.",
+  "reference_number": "GH-ENT-2024-001"
+}
+
+### 8. Lister toutes les dépenses
+GET {{baseUrl}}/finance/expenses/
+Authorization: Bearer {{authToken}}
+
+### 9. Marquer une dépense comme payée
+POST {{baseUrl}}/finance/expenses/1/payment/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "method": "Credit Card",
+  "payment_date": "2024-09-22",
+  "reference_number": "CC-20240922-001"
+}
+
+### 10. Créer un budget projet
+POST {{baseUrl}}/finance/budgets/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Budget Développement EcosystIA Q4 2024",
+  "type": "Project",
+  "amount": 5000000.00,
+  "currency": "XOF",
+  "start_date": "2024-10-01",
+  "end_date": "2024-12-31",
+  "description": "Budget pour le développement de la plateforme EcosystIA"
+}
+
+### 11. Lister tous les budgets
+GET {{baseUrl}}/finance/budgets/
+Authorization: Bearer {{authToken}}
+
+### 12. Créer un compte bancaire
+POST {{baseUrl}}/finance/accounts/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Compte Principal EcosystIA",
+  "account_type": "Business",
+  "account_number": "SN12345678901234567890",
+  "bank_name": "Banque Atlantique Sénégal",
+  "currency": "XOF",
+  "initial_balance": 10000000.00
+}
+
+### 13. Lister les comptes bancaires
+GET {{baseUrl}}/finance/accounts/
+Authorization: Bearer {{authToken}}
+
+### 14. Créer une transaction bancaire
+POST {{baseUrl}}/finance/transactions/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "account": 1,
+  "transaction_type": "Credit",
+  "category": "Invoice Payment",
+  "amount": 1000000.00,
+  "description": "Paiement reçu de SONATEL pour formation Django",
+  "reference_number": "TRX-20240925-001",
+  "transaction_date": "2024-09-25"
+}
+
+### 15. Calculer les taxes sur un montant
+POST {{baseUrl}}/finance/calculate-tax/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "amount": 2500000.00,
+  "tax_id": 1
+}
+
+### 16. Configuration des taxes
+GET {{baseUrl}}/finance/taxes/
+Authorization: Bearer {{authToken}}
+
+### 17. Créer une configuration de taxe
+POST {{baseUrl}}/finance/taxes/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "TVA Sénégal",
+  "rate": 18.00,
+  "is_active": true
+}
+
+### ========================================
+### 📊 ANALYTICS ET RAPPORTS RÉELS
+### ========================================
+
+### 18. Statistiques financières complètes
+GET {{baseUrl}}/finance/stats/?year=2024
+Authorization: Bearer {{authToken}}
+
+### 19. Dashboard financier complet
+GET {{baseUrl}}/finance/dashboard/
+Authorization: Bearer {{authToken}}
+
+### 20. Rapport de flux de trésorerie
+GET {{baseUrl}}/finance/cash-flow/?months=12
+Authorization: Bearer {{authToken}}
+
+### 21. Générer un rapport financier
+POST {{baseUrl}}/finance/reports/generate/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "report_type": "Income Statement",
+  "period_start": "2024-01-01",
+  "period_end": "2024-12-31"
+}
+
+### ========================================
+### 🔍 FILTRES ET RECHERCHES AVANCÉES
+### ========================================
+
+### 22. Filtrer les factures en retard
+GET {{baseUrl}}/finance/invoices/?is_overdue=true&status=Sent
+Authorization: Bearer {{authToken}}
+
+### 23. Rechercher des factures par client
+GET {{baseUrl}}/finance/invoices/?search=SONATEL&amount_min=1000000
+Authorization: Bearer {{authToken}}
+
+### 24. Filtrer les dépenses par catégorie et période
+GET {{baseUrl}}/finance/expenses/?category=Software&date_from=2024-09-01&date_to=2024-09-30
+Authorization: Bearer {{authToken}}
+
+### 25. Transactions par compte et type
+GET {{baseUrl}}/finance/transactions/?account=1&transaction_type=Credit&date_from=2024-09-01
+Authorization: Bearer {{authToken}}
+
+### 26. Budgets actifs seulement
+GET {{baseUrl}}/finance/budgets/?is_active=true
+Authorization: Bearer {{authToken}}
+
+### ========================================
+### 💼 SCÉNARIOS MÉTIER RÉELS
+### ========================================
+
+### 27. Scénario : Cycle complet de facturation
+# 1. Créer facture → 2. Envoyer → 3. Recevoir paiement partiel → 4. Rappel → 5. Paiement final
+
+# Étape 1: Créer la facture
+POST {{baseUrl}}/finance/invoices/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "client_name": "Orange Sénégal",
+  "client_email": "partenariats@orange.sn",
+  "amount": 5000000.00,
+  "tax_amount": 900000.00,
+  "total_amount": 5900000.00,
+  "currency": "XOF",
+  "status": "Sent",
+  "issue_date": "2024-09-20",
+  "due_date": "2024-11-20",
+  "description": "Formation complète IA et Machine Learning - 25 participants"
+}
+
+### 28. Étape 2: Paiement partiel
+POST {{baseUrl}}/finance/invoices/2/payment/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "amount": 3000000.00,
+  "method": "Bank Transfer",
+  "payment_date": "2024-10-15",
+  "reference_number": "ORANGE-PAY-001"
+}
+
+### 29. Étape 3: Envoyer rappel pour le solde
+POST {{baseUrl}}/finance/invoices/2/reminder/
+Authorization: Bearer {{authToken}}
+
+### 30. Scénario : Gestion de budget projet
+# 1. Créer budget → 2. Ajouter dépenses → 3. Suivre utilisation
+
+# Budget pour projet de formation IA
+POST {{baseUrl}}/finance/budgets/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Budget Formation IA - Orange Sénégal",
+  "type": "Project",
+  "amount": 3000000.00,
+  "currency": "XOF",
+  "start_date": "2024-10-01",
+  "end_date": "2024-12-31",
+  "description": "Budget alloué pour la formation IA d'Orange Sénégal"
+}
+
+### 31. Dépense liée au budget
+POST {{baseUrl}}/finance/expenses/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "category": "Training",
+  "description": "Matériel pédagogique et supports de cours IA",
+  "amount": 500000.00,
+  "currency": "XOF",
+  "status": "Paid",
+  "date": "2024-10-02",
+  "vendor": "Tech Books & Materials",
+  "budget_item_id": 1
+}
+
+### 32. Scénario : Suivi de trésorerie
+# Vérifier les flux de trésorerie mensuels
+GET {{baseUrl}}/finance/cash-flow/?months=6
+Authorization: Bearer {{authToken}}
+
+### 33. Scénario : Rapport de fin de mois
+POST {{baseUrl}}/finance/reports/generate/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "report_type": "Cash Flow",
+  "period_start": "2024-09-01",
+  "period_end": "2024-09-30"
+}
+
+### ========================================
+### 🚀 TESTS DE PERFORMANCE
+### ========================================
+
+### 34. Test pagination - Factures
+GET {{baseUrl}}/finance/invoices/?page=1&page_size=20
+Authorization: Bearer {{authToken}}
+
+### 35. Test filtres multiples - Dépenses
+GET {{baseUrl}}/finance/expenses/?category=Software&status=Paid&amount_min=100000&date_from=2024-01-01
+Authorization: Bearer {{authToken}}
+
+### 36. Test recherche - Toutes entités
+GET {{baseUrl}}/finance/invoices/?search=formation&amount_min=1000000
+Authorization: Bearer {{authToken}}
+
+### ========================================
+### ✅ VALIDATION DES DONNÉES MÉTIER
+### ========================================
+
+### 37. Test validation - Montant négatif (doit échouer)
+POST {{baseUrl}}/finance/invoices/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "client_name": "Test Client",
+  "amount": -1000.00,
+  "total_amount": -1000.00,
+  "issue_date": "2024-09-20",
+  "due_date": "2024-10-20"
+}
+
+### 38. Test validation - Date incohérente (doit échouer)
+POST {{baseUrl}}/finance/expenses/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "category": "Software",
+  "description": "Test dépense",
+  "amount": 100000.00,
+  "date": "2024-12-31",
+  "due_date": "2024-01-01"
+}
+
+### 39. Test paiement - Montant supérieur au solde (doit échouer)
+POST {{baseUrl}}/finance/invoices/1/payment/
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "amount": 99999999.00,
+  "method": "Bank Transfer"
+}
+
+### ========================================
+### 📈 ANALYTICS MÉTIER AVANCÉES
+### ========================================
+
+### 40. Analytics par période personnalisée
+GET {{baseUrl}}/finance/stats/?year=2024
+Authorization: Bearer {{authToken}}
+
+### 41. Flux de trésorerie détaillé
+GET {{baseUrl}}/finance/cash-flow/?months=12
+Authorization: Bearer {{authToken}}
+
+### 42. Dashboard avec toutes les métriques
+GET {{baseUrl}}/finance/dashboard/
+Authorization: Bearer {{authToken}}
+
+### ========================================
+### 🎯 TESTS INTÉGRATION MÉTIER
+### ========================================
+
+### 43. Workflow complet : Facture → Paiement → Rapport
+# Utilisez les endpoints précédents dans l'ordre :
+# 1. Créer facture (test 1)
+# 2. Enregistrer paiement (test 4)
+# 3. Vérifier dans dashboard (test 42)
+
+### 44. Workflow budget : Création → Dépenses → Suivi
+# 1. Créer budget (test 10)
+# 2. Ajouter dépenses (test 31)
+# 3. Vérifier utilisation dans stats (test 40)
+
+### ========================================
+### ✅ API FINANCE COMPLÈTE ET OPÉRATIONNELLE
+### ========================================
+### 
+### Fonctionnalités réelles implémentées :
+### ✅ Gestion complète des factures avec paiements partiels
+### ✅ Suivi des dépenses par catégorie et budget
+### ✅ Budgets avec lignes et éléments détaillés
+### ✅ Comptes bancaires avec transactions
+### ✅ Calculs de taxes automatiques
+### ✅ Rapports financiers générés dynamiquement
+### ✅ Analytics temps réel avec métriques métier
+### ✅ Workflow complets de gestion financière
+### ✅ Validation métier stricte
+### ✅ Filtres et recherches avancées
+### 
+### Prête pour la production ! 🚀💰

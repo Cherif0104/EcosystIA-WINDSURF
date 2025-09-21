@@ -1,18 +1,19 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 import { Project, Task, User, Contact } from '../types';
 
-const API_KEY = process.env.API_KEY;
+const API_KEY = import.meta.env.VITE_API_KEY || process.env.API_KEY;
 
 if (!API_KEY) {
-  console.warn("Gemini API key not found. Please set the API_KEY environment variable.");
+  console.warn("Gemini API key not found. Running in mock mode. Set VITE_API_KEY to enable real AI features.");
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
+// Only initialize AI if API key is available
+const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 // --- Existing Functions ---
 
 export const runAICoach = async (prompt: string): Promise<string> => {
-  if (!API_KEY) {
+  if (!ai) {
     await new Promise(resolve => setTimeout(resolve, 1500));
     return `This is a mock response because the Gemini API key is not configured. 
     For your prompt: "${prompt}", here's a sample idea:
@@ -27,7 +28,7 @@ export const runAICoach = async (prompt: string): Promise<string> => {
         model: 'gemini-2.5-flash',
         contents: prompt,
         config: {
-          systemInstruction: `You are an expert project and strategy coach for SENEGEL WorkFlow, a platform empowering teams and individuals. Your goal is to provide actionable, encouraging, and contextually relevant advice. When asked for project ideas, focus on sustainability, social impact, and technological feasibility. Structure your answers clearly with headings, bullet points, or numbered lists. Always maintain a positive and empowering tone.`,
+          systemInstruction: `You are an expert project and strategy coach for EcosystIA, a platform empowering teams and individuals. Your goal is to provide actionable, encouraging, and contextually relevant advice. When asked for project ideas, focus on sustainability, social impact, and technological feasibility. Structure your answers clearly with headings, bullet points, or numbered lists. Always maintain a positive and empowering tone.`,
         }
     });
     return response.text;
@@ -245,7 +246,7 @@ Dear ${contact.name},
 
 I hope this email finds you well.
 
-My name is ${user.name}, and I'm a ${user.role} at SENEGEL WorkFlow. I'm writing to you today because I believe there could be a strong synergy between our organizations.
+My name is ${user.name}, and I'm a ${user.role} at EcosystIA. I'm writing to you today because I believe there could be a strong synergy between our organizations.
 
 We are focused on empowering teams through AI-driven project management, and we see great potential for collaboration with ${contact.company}.
 
@@ -255,7 +256,7 @@ Best regards,
 ${user.name}`;
     }
     try {
-        const prompt = `Draft a professional and concise introductory sales email from ${user.name}, a ${user.role} at SENEGEL WorkFlow, to ${contact.name} at ${contact.company}. The goal is to initiate a conversation about a potential partnership.`;
+        const prompt = `Draft a professional and concise introductory sales email from ${user.name}, a ${user.role} at EcosystIA, to ${contact.name} at ${contact.company}. The goal is to initiate a conversation about a potential partnership.`;
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
@@ -335,11 +336,11 @@ export const runAIAgent = async (prompt: string, context: string): Promise<strin
         return `This is a mock AI Agent response for the '${context}' view. You asked: "${prompt}". In a real scenario, I would provide helpful, context-specific guidance based on your current page.`;
     }
 
-    let systemInstruction = "You are a friendly and helpful general assistant for SENEGEL WorkFlow, an application designed to empower teams and individuals. Your goal is to help users navigate and maximize the value of the app. Be concise and clear. Use markdown for lists if needed.";
+    let systemInstruction = "You are a friendly and helpful general assistant for EcosystIA, an application designed to empower teams and individuals. Your goal is to help users navigate and maximize the value of the app. Be concise and clear. Use markdown for lists if needed.";
 
     switch (context) {
         case 'dashboard':
-            systemInstruction = "You are an assistant on the SENEGEL WorkFlow dashboard. Help users find information, navigate to other sections (like 'Projects' or 'Courses'), and understand their overview. Be proactive and encouraging.";
+            systemInstruction = "You are an assistant on the EcosystIA dashboard. Help users find information, navigate to other sections (like 'Projects' or 'Courses'), and understand their overview. Be proactive and encouraging.";
             break;
         case 'projects':
         case 'project_detail':
@@ -411,7 +412,7 @@ export const runAuthAIAssistant = async (prompt: string): Promise<string> => {
             model: 'gemini-2.5-flash',
             contents: prompt,
             config: {
-                systemInstruction: `You are a helpful and secure AI assistant for the SENEGEL WorkFlow authentication page. Your primary goal is to assist users with login and signup questions without compromising security.
+                systemInstruction: `You are a helpful and secure AI assistant for the EcosystIA authentication page. Your primary goal is to assist users with login and signup questions without compromising security.
 
 - If a user asks about a forgotten password, provide this exact, safe, generic advice: "To reset your password, you should look for a 'Forgot Password?' link on the login page. Clicking it will guide you through the process, which usually involves sending a secure reset link to your registered email address." **Under no circumstances should you ask for their email or any other personal information.**
 

@@ -20,7 +20,7 @@ export const mockUsers: { [key: string]: User } = {
   super_administrator: {
     id: 3,
     name: "Fatou N'diaye",
-    email: "fatou.ndiaye@senegelworkflow.org",
+    email: "fatou.ndiaye@ecosystia.org",
     avatar: "https://picsum.photos/seed/admin/100/100",
     role: 'super_administrator',
     skills: ["System Administration", "Data Analysis", "Strategic Planning"],
@@ -44,7 +44,7 @@ export const mockUsers: { [key: string]: User } = {
   administrator: {
     id: 6,
     name: "Ndèye Coumba",
-    email: "ndeye.coumba@senegelworkflow.org",
+    email: "ndeye.coumba@ecosystia.org",
     avatar: "https://picsum.photos/seed/staff/100/100",
     role: 'administrator',
     skills: ["Project Coordination", "Volunteer Management", "Training Facilitation", "Mentorship"],
@@ -52,7 +52,7 @@ export const mockUsers: { [key: string]: User } = {
   manager: {
     id: 7,
     name: "Daouda Sow",
-    email: "daouda.sow@senegelworkflow.org",
+    email: "daouda.sow@ecosystia.org",
     avatar: "https://picsum.photos/seed/manager/100/100",
     role: 'manager',
     skills: ["Team Leadership", "Budgeting", "Product Management"],
@@ -60,7 +60,7 @@ export const mockUsers: { [key: string]: User } = {
   supervisor: {
     id: 8,
     name: "Coumba Diallo",
-    email: "coumba.diallo@senegelworkflow.org",
+    email: "coumba.diallo@ecosystia.org",
     avatar: "https://picsum.photos/seed/supervisor/100/100",
     role: 'supervisor',
     skills: ["Mentorship", "Quality Assurance", "Curriculum Development"],
@@ -68,7 +68,7 @@ export const mockUsers: { [key: string]: User } = {
   editor: {
     id: 9,
     name: "Lamine Gueye",
-    email: "lamine.gueye@senegelworkflow.org",
+    email: "lamine.gueye@ecosystia.org",
     avatar: "https://picsum.photos/seed/editor/100/100",
     role: 'editor',
     skills: ["Copywriting", "Editing", "SEO", "Content Strategy"],
@@ -100,7 +100,7 @@ export const mockUsers: { [key: string]: User } = {
   intern: {
     id: 13,
     name: "Awa Gueye",
-    email: "awa.gueye@senegelworkflow.org",
+    email: "awa.gueye@ecosystia.org",
     avatar: "https://picsum.photos/seed/intern/100/100",
     role: 'intern',
     skills: ["Research", "Social Media", "Data Entry"],
@@ -189,7 +189,7 @@ export const mockCourses: Course[] = [
 
 export const mockJobs: Job[] = [
   { id: 1, title: "Community Manager", company: "Senegal Numerique SA", location: "Dakar, Senegal", type: "Full-time", postedDate: "2 days ago", description: "Manage our online community, create engaging content, and drive social media strategy.", requiredSkills: ["Community Management", "Social Media", "Content Creation"], applicants: [] },
-  { id: 2, title: "Project Assistant (Non-Profit)", company: "SENEGEL WorkFlow Org", location: "Thiès, Senegal", type: "Part-time", postedDate: "5 days ago", description: "Assist project managers with daily tasks, reporting, and stakeholder communication in a non-profit environment.", requiredSkills: ["Project Management", "Communication", "Microsoft Office"], applicants: [mockUsers.student3] },
+  { id: 2, title: "Project Assistant (Non-Profit)", company: "EcosystIA Organization", location: "Thiès, Senegal", type: "Part-time", postedDate: "5 days ago", description: "Assist project managers with daily tasks, reporting, and stakeholder communication in a non-profit environment.", requiredSkills: ["Project Management", "Communication", "Microsoft Office"], applicants: [mockUsers.student3] },
   { id: 3, title: "Artisan Marketplace Coordinator", company: "Artisans du Sénégal", location: "Remote", type: "Contract", postedDate: "1 week ago", description: "Coordinate with local artisans to feature their products on our e-commerce platform.", requiredSkills: ["E-commerce", "Vendor Management", "Logistics"], applicants: [] },
   { id: 4, title: "Junior Graphic Designer", company: "Wave Mobile Money", location: "Dakar, Senegal", type: "Full-time", postedDate: "3 days ago", description: "Create compelling visual assets for our marketing campaigns across various digital channels.", requiredSkills: ["Graphic Design", "Adobe Suite", "UI/UX"], applicants: [mockUsers.student2] },
 ];

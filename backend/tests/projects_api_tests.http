@@ -1,0 +1,51 @@
+### Test de création de projet
+POST http://localhost:8000/api/v1/projects/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Projet Test EcosystIA",
+  "description": "Description du projet test",
+  "due_date": "2024-12-31",
+  "status": "In Progress"
+}
+
+### Test de liste des projets
+GET http://localhost:8000/api/v1/projects/
+Authorization: Bearer {{access_token}}
+
+### Test de détails d'un projet
+GET http://localhost:8000/api/v1/projects/1/
+Authorization: Bearer {{access_token}}
+
+### Test de création de tâche
+POST http://localhost:8000/api/v1/projects/1/tasks/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "text": "Tâche test",
+  "status": "To Do",
+  "priority": "High",
+  "estimated_time": 120
+}
+
+### Test de création de risque
+POST http://localhost:8000/api/v1/projects/1/risks/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "description": "Risque de retard",
+  "likelihood": "Medium",
+  "impact": "High",
+  "mitigation_strategy": "Planifier des réunions de suivi"
+}
+
+### Test d'ajout d'un membre à l'équipe
+POST http://localhost:8000/api/v1/projects/1/team/add/2/
+Authorization: Bearer {{access_token}}
+
+### Test de retrait d'un membre de l'équipe
+DELETE http://localhost:8000/api/v1/projects/1/team/remove/2/
+Authorization: Bearer {{access_token}}
