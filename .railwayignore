@@ -1,0 +1,17 @@
+# Fichiers à ignorer pour Railway
+node_modules/
+.git/
+*.log
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+.DS_Store
+.vscode/
+.idea/
+backend/logs/
+backend/media/
+backend/staticfiles/

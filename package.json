@@ -3,10 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@google/genai": "^1.8.0",
@@ -19,6 +23,9 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }
