@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { databaseService } from '../services/databaseService';
+import { genericDatabaseService } from '../services/genericDatabaseService';
+import { useDataSync } from '../hooks/useDataSync';
+import { geminiService } from '../services/geminiService';
+
 import { useLocalization } from '../contexts/LocalizationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Contact } from '../types';
-import { draftSalesEmail } from '../services/geminiService';
+import { draftSalesEmail, geminiService } from '../services/geminiService';
 import ConfirmationModal from './common/ConfirmationModal';
 
 const statusStyles = {
@@ -10,6 +15,312 @@ const statusStyles = {
     'Contacted': 'bg-yellow-100 text-yellow-800',
     'Prospect': 'bg-purple-100 text-purple-800',
     'Customer': 'bg-green-100 text-green-800',
+};
+
+// Sous-module : Analyse des ventes IA
+const SalesAnalyticsCard: React.FC<{
+    contacts: Contact[];
+}> = ({ contacts }) => {
+    const { t } = useLocalization();
+    const [analytics, setAnalytics] = useState<string>('');
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const generateAnalytics = async () => {
+            setLoading(true);
+            const salesData = {
+                totalContacts: contacts.length,
+                leads: contacts.filter(c => c.status === 'Lead').length,
+                contacted: contacts.filter(c => c.status === 'Contacted').length,
+                prospects: contacts.filter(c => c.status === 'Prospect').length,
+                customers: contacts.filter(c => c.status === 'Customer').length,
+                conversionRate: contacts.length > 0 ? (contacts.filter(c => c.status === 'Customer').length / contacts.length) * 100 : 0
+            };
+
+            const aiAnalytics = await geminiService.analyzeData([salesData], 'insights');
+            setAnalytics(aiAnalytics);
+            setLoading(false);
+        };
+
+        generateAnalytics();
+    }, [contacts]);
+
+    const metrics = useMemo(() => {
+        const totalContacts = contacts.length;
+        const customers = contacts.filter(c => c.status === 'Customer').length;
+        const conversionRate = totalContacts > 0 ? (customers / totalContacts) * 100 : 0;
+        
+        return {
+            totalContacts,
+            customers,
+            conversionRate: Math.round(conversionRate),
+            leads: contacts.filter(c => c.status === 'Lead').length,
+            prospects: contacts.filter(c => c.status === 'Prospect').length
+        };
+    }, [contacts]);
+
+    
+  // Gestionnaires d'événements pour les boutons
+  const handleButtonClick = (action: string) => {
+    console.log('Action:', action);
+    // Logique spécifique selon l'action
+  };
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Formulaire soumis');
+    // Logique de soumission
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    console.log('Changement:', name, value);
+    // Logique de changement
+  };
+
+  
+  // Gestionnaires d'événements complets
+  const handleCreate = async (data: any) => {
+    try {
+      const result = await genericDatabaseService.create('crm', data);
+      console.log('Creation reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur creation:', error);
+    }
+  };
+  
+  const handleEdit = async (id: number, data: any) => {
+    try {
+      const result = await genericDatabaseService.update('crm', id, data);
+      console.log('Modification reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur modification:', error);
+    }
+  };
+  
+  const handleDelete = async (id: number) => {
+    try {
+      const result = await genericDatabaseService.delete('crm', id);
+      console.log('Suppression reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
+  };
+  
+  const handleExport = async () => {
+    try {
+      const data = await genericDatabaseService.getAll('crm');
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'crm_export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur export:', error);
+    }
+  };
+  
+  const handleImport = async (file: File) => {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await databaseService.bulkCreate('crm', data);
+      console.log('Import reussi');
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur import:', error);
+    }
+  };
+  
+  const handleApprove = async (id: number) => {
+    try {
+      const result = await databaseService.update('crm', id, { status: 'approved' });
+      console.log('Approbation reussie:', result);
+    } catch (error) {
+      console.error('Erreur approbation:', error);
+    }
+  };
+  
+  const handleReject = async (id: number) => {
+    try {
+      const result = await databaseService.update('crm', id, { status: 'rejected' });
+      console.log('Rejet reussi:', result);
+    } catch (error) {
+      console.error('Erreur rejet:', error);
+    }
+  };
+  
+  const handleCancel = () => {
+    console.log('Action annulée');
+    // Fermer les modals ou réinitialiser
+  };
+  
+  const handleSave = async (data: any) => {
+    try {
+      const result = await databaseService.createOrUpdate('crm', data);
+      console.log('Sauvegarde reussie:', result);
+    } catch (error) {
+      console.error('Erreur sauvegarde:', error);
+    }
+  };
+  
+  const handleAdd = async (data: any) => {
+    try {
+      const result = await databaseService.create('crm', data);
+      console.log('Ajout reussi:', result);
+    } catch (error) {
+      console.error('Erreur ajout:', error);
+    }
+  };
+  
+  const handleRemove = async (id: number) => {
+    try {
+      const result = await databaseService.delete('crm', id);
+      console.log('Suppression reussie:', result);
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
+  };
+
+  return (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">📊 Analyse des Ventes SENEGEL</h3>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{metrics.totalContacts}</div>
+                    <div className="text-sm text-gray-500">Total Contacts</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{metrics.customers}</div>
+                    <div className="text-sm text-gray-500">Clients</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">{metrics.conversionRate}%</div>
+                    <div className="text-sm text-gray-500">Taux de conversion</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-600">{metrics.leads}</div>
+                    <div className="text-sm text-gray-500">Leads actifs</div>
+                </div>
+            </div>
+            {loading ? (
+                <div className="flex justify-center items-center py-4">
+                    <i className="fas fa-spinner fa-spin text-xl text-emerald-500"></i>
+                </div>
+            ) : analytics ? (
+                <div className="prose prose-sm max-w-none">
+                    <p className="text-gray-600 whitespace-pre-line">{analytics}</p>
+                </div>
+            ) : null}
+        </div>
+    );
+};
+
+// Sous-module : Recommandations de prospection
+const ProspectingRecommendationsCard: React.FC<{
+    contacts: Contact[];
+}> = ({ contacts }) => {
+    const { t } = useLocalization();
+    const [recommendations, setRecommendations] = useState<string[]>([]);
+
+    useEffect(() => {
+        const generateRecommendations = () => {
+            const newRecommendations: string[] = [];
+            
+            // Analyse des leads stagnants
+            const staleLeads = contacts.filter(c => c.status === 'Lead').length;
+            if (staleLeads > 3) {
+                newRecommendations.push(`🎯 ${staleLeads} leads stagnants - Relancez avec des emails personnalisés`);
+            }
+
+            // Analyse du taux de conversion
+            const conversionRate = contacts.length > 0 ? (contacts.filter(c => c.status === 'Customer').length / contacts.length) * 100 : 0;
+            if (conversionRate < 20) {
+                newRecommendations.push(`📈 Taux de conversion faible (${Math.round(conversionRate)}%) - Améliorez la qualification des leads`);
+            }
+
+            // Analyse des prospects
+            const prospects = contacts.filter(c => c.status === 'Prospect').length;
+            if (prospects > 5) {
+                newRecommendations.push(`💼 ${prospects} prospects en attente - Planifiez des appels de suivi`);
+            }
+
+            // Analyse des clients
+            const customers = contacts.filter(c => c.status === 'Customer').length;
+            if (customers > 0) {
+                newRecommendations.push(`🤝 ${customers} client(s) - Développez les ventes croisées`);
+            }
+
+            setRecommendations(newRecommendations);
+        };
+
+        generateRecommendations();
+    }, [contacts]);
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">💡 Recommandations Prospection</h3>
+            <div className="space-y-3">
+                {recommendations.length > 0 ? (
+                    recommendations.map((rec, index) => (
+                        <div key={index} className="p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                            <p className="text-sm text-gray-700">{rec}</p>
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center py-4">
+                        <i className="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+                        <p className="text-sm text-gray-500">Pipeline optimisé</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Sous-module : Pipeline visuel
+const PipelineVisualizationCard: React.FC<{
+    contacts: Contact[];
+}> = ({ contacts }) => {
+    const { t } = useLocalization();
+    
+    const pipelineData = useMemo(() => {
+        const statuses: Contact['status'][] = ['Lead', 'Contacted', 'Prospect', 'Customer'];
+        return statuses.map(status => ({
+            status,
+            count: contacts.filter(c => c.status === status).length,
+            percentage: contacts.length > 0 ? (contacts.filter(c => c.status === status).length / contacts.length) * 100 : 0
+        }));
+    }, [contacts]);
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">📈 Pipeline SENEGEL</h3>
+            <div className="space-y-4">
+                {pipelineData.map(({ status, count, percentage }) => (
+                    <div key={status} className="flex items-center space-x-4">
+                        <div className="w-20 text-sm font-medium text-gray-600">
+                            {t(status.toLowerCase())}
+                        </div>
+                        <div className="flex-1 bg-gray-200 rounded-full h-4">
+                            <div 
+                                className={`h-4 rounded-full ${statusStyles[status]}`}
+                                style={{ width: `${percentage}%` }}
+                            ></div>
+                        </div>
+                        <div className="w-12 text-sm text-gray-600 text-right">
+                            {count}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 const ContactFormModal: React.FC<{
@@ -156,6 +467,26 @@ const CRM: React.FC<CRMProps> = ({ contacts, onAddContact, onUpdateContact, onDe
 
     const canManage = user?.role === 'administrator' || user?.role === 'manager';
     
+    // Hook de synchronisation des données
+    const {
+        data: syncedContacts,
+        createWithSync,
+        updateWithSync,
+        deleteWithSync,
+        refreshData
+    } = useDataSync(
+        { table: 'contacts', autoRefresh: true },
+        contacts,
+        (newContacts) => {
+            // Mettre à jour les contacts dans le parent
+            newContacts.forEach(contact => {
+                if (onUpdateContact) {
+                    onUpdateContact(contact as Contact);
+                }
+            });
+        }
+    );
+    
     const pipelineStatuses: Contact['status'][] = ['Lead', 'Contacted', 'Prospect', 'Customer'];
 
     const handleDraftEmail = async (contact: Contact) => {
@@ -172,14 +503,22 @@ const CRM: React.FC<CRMProps> = ({ contacts, onAddContact, onUpdateContact, onDe
         setEmailBody('');
     };
     
-    const handleSaveContact = (contactData: Contact | Omit<Contact, 'id'>) => {
-        if ('id' in contactData) {
-            onUpdateContact(contactData);
-        } else {
-            onAddContact(contactData);
+    const handleSaveContact = async (contactData: Contact | Omit<Contact, 'id'>) => {
+        try {
+            if ('id' in contactData) {
+                // Mise à jour avec synchronisation
+                await updateWithSync(contactData.id, contactData);
+                onUpdateContact(contactData);
+            } else {
+                // Création avec synchronisation
+                const newContact = await createWithSync(contactData);
+                onAddContact(newContact);
+            }
+            setFormModalOpen(false);
+            setEditingContact(null);
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde du contact:', error);
         }
-        setFormModalOpen(false);
-        setEditingContact(null);
     };
 
     const handleEdit = (contact: Contact) => {
@@ -187,9 +526,14 @@ const CRM: React.FC<CRMProps> = ({ contacts, onAddContact, onUpdateContact, onDe
         setFormModalOpen(true);
     };
     
-    const handleDelete = (contactId: number) => {
-        onDeleteContact(contactId);
-        setDeletingContactId(null);
+    const handleDelete = async (contactId: number) => {
+        try {
+            await deleteWithSync(contactId);
+            onDeleteContact(contactId);
+            setDeletingContactId(null);
+        } catch (error) {
+            console.error('Erreur lors de la suppression du contact:', error);
+        }
     }
     
     // Drag and Drop handlers
@@ -219,10 +563,10 @@ const CRM: React.FC<CRMProps> = ({ contacts, onAddContact, onUpdateContact, onDe
 
     return (
         <div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800">{t('crm_title')}</h1>
-                    <p className="mt-1 text-gray-600">{t('crm_subtitle')}</p>
+                    <p className="mt-1 text-gray-600">Gestion des relations clients SENEGEL</p>
                 </div>
                 <div className="flex items-center space-x-2">
                     <div className="p-1 bg-gray-200 rounded-lg">
@@ -235,6 +579,17 @@ const CRM: React.FC<CRMProps> = ({ contacts, onAddContact, onUpdateContact, onDe
                         </button>
                     )}
                 </div>
+            </div>
+
+            {/* Sous-modules SENEGEL */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <SalesAnalyticsCard contacts={contacts} />
+                <ProspectingRecommendationsCard contacts={contacts} />
+            </div>
+
+            {/* Pipeline visuel */}
+            <div className="mb-8">
+                <PipelineVisualizationCard contacts={contacts} />
             </div>
             
             {view === 'list' && (

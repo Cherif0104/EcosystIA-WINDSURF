@@ -1,5 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { databaseService } from '../services/databaseService';
+import { genericDatabaseService } from '../services/genericDatabaseService';
+import { useDataSync } from '../hooks/useDataSync';
+import { geminiService } from '../services/geminiService';
+
 import { useLocalization } from '../contexts/LocalizationContext';
 import { runAICoach } from '../services/geminiService';
 
@@ -9,6 +14,21 @@ const AICoach: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState('');
   const responseRef = useRef<HTMLDivElement>(null);
+  
+  // Hook de synchronisation des données
+  const {
+    data: syncedSessions,
+    createWithSync,
+    updateWithSync,
+    deleteWithSync,
+    refreshData
+  } = useDataSync(
+    { table: 'aicoach', autoRefresh: true },
+    [], // Pas de données initiales pour ce composant
+    (newSessions) => {
+      console.log('Sessions IA synchronisées:', newSessions.length);
+    }
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +59,115 @@ const AICoach: React.FC = () => {
         }
         return <p key={index} className="mb-2">{line}</p>;
       });
+  };
+
+  
+  // Gestionnaires d'événements complets
+  const handleCreate = async (data: any) => {
+    try {
+      const result = await genericDatabaseService.create('aicoach', data);
+      console.log('Creation reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur creation:', error);
+    }
+  };
+  
+  const handleEdit = async (id: number, data: any) => {
+    try {
+      const result = await genericDatabaseService.update('aicoach', id, data);
+      console.log('Modification reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur modification:', error);
+    }
+  };
+  
+  const handleDelete = async (id: number) => {
+    try {
+      const result = await genericDatabaseService.delete('aicoach', id);
+      console.log('Suppression reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
+  };
+  
+  const handleExport = async () => {
+    try {
+      const data = await genericDatabaseService.getAll('aicoach');
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'aicoach_export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur export:', error);
+    }
+  };
+  
+  const handleImport = async (file: File) => {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await genericDatabaseService.bulkCreate('aicoach', data);
+      console.log('Import reussi');
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur import:', error);
+    }
+  };
+  
+  const handleApprove = async (id: number) => {
+    try {
+      const result = await genericDatabaseService.update('aicoach', id, { status: 'approved' });
+      console.log('Approbation reussie:', result);
+    } catch (error) {
+      console.error('Erreur approbation:', error);
+    }
+  };
+  
+  const handleReject = async (id: number) => {
+    try {
+      const result = await genericDatabaseService.update('aicoach', id, { status: 'rejected' });
+      console.log('Rejet reussi:', result);
+    } catch (error) {
+      console.error('Erreur rejet:', error);
+    }
+  };
+  
+  const handleCancel = () => {
+    console.log('Action annulée');
+    // Fermer les modals ou réinitialiser
+  };
+  
+  const handleSave = async (data: any) => {
+    try {
+      const result = await genericDatabaseService.createOrUpdate('aicoach', data);
+      console.log('Sauvegarde reussie:', result);
+    } catch (error) {
+      console.error('Erreur sauvegarde:', error);
+    }
+  };
+  
+  const handleAdd = async (data: any) => {
+    try {
+      const result = await genericDatabaseService.create('aicoach', data);
+      console.log('Ajout reussi:', result);
+    } catch (error) {
+      console.error('Erreur ajout:', error);
+    }
+  };
+  
+  const handleRemove = async (id: number) => {
+    try {
+      const result = await genericDatabaseService.delete('aicoach', id);
+      console.log('Suppression reussie:', result);
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
   };
 
   return (

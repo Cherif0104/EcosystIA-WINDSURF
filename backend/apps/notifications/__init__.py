@@ -1,1 +1,0 @@
-# Notifications app pour EcosystIA

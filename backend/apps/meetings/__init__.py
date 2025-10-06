@@ -1,1 +1,0 @@
-# Meetings app pour EcosystIA

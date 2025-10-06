@@ -1,0 +1,42 @@
+{
+  "name": "SENEGEL WorkFlow MVP",
+  "version": "1.0.0",
+  "description": "Version MVP conforme aux exigences SENEGEL",
+  "features": [
+    "Gestion de projets simplifiée",
+    "Gestion de tâches basique",
+    "Tableau de bord essentiel",
+    "Authentification utilisateur",
+    "Rôles utilisateur (admin, user, viewer)",
+    "Interface responsive"
+  ],
+  "architecture": {
+    "frontend": "React + TypeScript + Vite",
+    "styling": "Tailwind CSS",
+    "state": "React Hooks",
+    "auth": "Supabase",
+    "deployment": "VPS Ready"
+  },
+  "modules": [
+    "Dashboard",
+    "Projets",
+    "Tâches",
+    "Profil utilisateur",
+    "ARVA Assistant"
+  ],
+  "roles": {
+    "admin": [
+      "Tous les modules",
+      "Gestion utilisateurs"
+    ],
+    "user": [
+      "Projets",
+      "Tâches",
+      "Profil"
+    ],
+    "viewer": [
+      "Dashboard",
+      "Profil"
+    ]
+  }
+}

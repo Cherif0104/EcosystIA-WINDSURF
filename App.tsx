@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { QueryProvider } from './providers/QueryProvider';
-import { useAuth, AuthProvider } from './contexts/AuthContext';
-import { useLocalization, LocalizationProvider } from './contexts/LocalizationContext';
-import ToastComponent from './components/common/Toast';
-import env from './config/environment';
-
-// Import des données mock (à supprimer progressivement)
+import { useAuth } from './contexts/AuthContext';
+import { usePersistedState } from './hooks/usePersistedState';
 import { mockCourses, mockJobs, mockProjects, mockGoals, mockContacts, mockDocuments, mockAllUsers, mockTimeLogs, mockLeaveRequests, mockInvoices, mockExpenses, mockRecurringInvoices, mockRecurringExpenses, mockBudgets, mockMeetings } from './constants/data';
 import { Course, Job, Project, Objective, Contact, Document, User, Role, TimeLog, LeaveRequest, Invoice, Expense, AppNotification, RecurringInvoice, RecurringExpense, RecurrenceFrequency, Budget, Meeting } from './types';
+import { useLocalization } from './contexts/LocalizationContext';
 
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -30,17 +26,17 @@ import KnowledgeBase from './components/KnowledgeBase';
 import CreateJob from './components/CreateJob';
 import UserManagement from './components/UserManagement';
 import AIAgent from './components/AIAgent';
-import TimeTracking from './components/TimeTracking';
+import TimeTrackingModern from './components/TimeTrackingModern';
 import LeaveManagement from './components/LeaveManagement';
 import Finance from './components/Finance';
+import SuperAdmin from './components/SuperAdmin';
 
 
-// Composant principal de l'application
-const AppContent: React.FC = () => {
-  const { user, login } = useAuth();
+const App: React.FC = () => {
+  const { user, login, isLoading, isAuthenticated } = useAuth();
   const { t } = useLocalization();
   const [authView, setAuthView] = useState<'login' | 'signup'>('login');
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentView, setCurrentView] = usePersistedState('ecosystia_current_view', 'dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   
   // Lifted State
@@ -188,7 +184,22 @@ const AppContent: React.FC = () => {
     login(newUser);
   };
 
-  if (!user) {
+  // Affichage du loading pendant la vérification de la session
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">EcosystIA</h2>
+          <p className="text-gray-600">Vérification de votre session...</p>
+          <p className="text-sm text-gray-500 mt-2">Veuillez patienter</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si pas authentifié, afficher la page de connexion
+  if (!isAuthenticated) {
     if (authView === 'signup') {
         return <Signup onSignup={handleUserSignup} onSwitchToLogin={() => setAuthView('login')} allUsers={users} />;
     }
@@ -424,16 +435,15 @@ const AppContent: React.FC = () => {
       case 'dashboard':
         return <Dashboard setView={handleSetView} projects={projects} courses={courses} jobs={jobs} timeLogs={timeLogs} leaveRequests={leaveRequests} invoices={invoices} expenses={expenses} />;
       case 'time_tracking':
-        return <TimeTracking 
+        return <TimeTrackingModern 
                     timeLogs={timeLogs} 
                     onAddTimeLog={handleAddTimeLog} 
                     projects={projects} 
                     courses={courses}
                     meetings={meetings}
                     users={users}
-                    onAddMeeting={handleAddMeeting}
-                    onUpdateMeeting={handleUpdateMeeting}
-                    onDeleteMeeting={handleDeleteMeeting}
+                    onUpdateTimeLog={handleUpdateTimeLog}
+                    onDeleteTimeLog={handleDeleteTimeLog}
                 />;
       case 'projects':
         return <Projects 
@@ -521,6 +531,8 @@ const AppContent: React.FC = () => {
         return <TalentAnalytics setView={handleSetView} />;
       case 'settings':
         return <Settings reminderDays={reminderDays} onSetReminderDays={setReminderDays} />;
+      case 'super_admin':
+        return <SuperAdmin />;
       default:
         return <Dashboard setView={handleSetView} projects={projects} courses={courses} jobs={jobs} timeLogs={timeLogs} leaveRequests={leaveRequests} invoices={invoices} expenses={expenses}/>;
     }
@@ -545,21 +557,7 @@ const AppContent: React.FC = () => {
       </div>
        {isSidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black opacity-50 z-40 lg:hidden"></div>}
        <AIAgent currentView={currentView} />
-       <ToastComponent />
     </div>
-  );
-};
-
-// Composant App avec tous les providers
-const App: React.FC = () => {
-  return (
-    <QueryProvider>
-      <LocalizationProvider>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </LocalizationProvider>
-    </QueryProvider>
   );
 };
 

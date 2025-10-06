@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLocalization } from '../contexts/LocalizationContext';
 import { Language, AppNotification } from '../types';
 import NexusFlowIcon from './icons/NexusFlowIcon';
+import RealtimeNotifications from './common/RealtimeNotifications';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -37,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, setView, notifications, 
             </button>
              <div className="flex-shrink-0 flex items-center space-x-2">
                 <NexusFlowIcon className="h-8 w-auto" />
-                <span className="font-bold text-lg text-gray-800 hidden sm:block">{t('senegel_workflow_platform')}</span>
+                <span className="font-bold text-lg text-gray-800 hidden sm:block">{t('ecosystia_platform')}</span>
             </div>
           </div>
           
@@ -45,14 +46,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, setView, notifications, 
           <div className="flex items-center space-x-4">
             {/* Notifications */}
             <div className="relative">
-              <button onClick={() => setNotificationsOpen(!isNotificationsOpen)} className="text-gray-600 hover:text-emerald-600 relative">
-                <i className="fas fa-bell fa-lg"></i>
-                {unreadCount > 0 && (
-                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center border-2 border-white">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
+              <RealtimeNotifications className="text-gray-600 hover:text-emerald-600" />
               {isNotificationsOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50">
                   <div className="p-3 border-b flex justify-between items-center">

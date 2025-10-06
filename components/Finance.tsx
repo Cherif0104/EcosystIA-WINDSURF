@@ -1,7 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { databaseService } from '../services/databaseService';
+import { genericDatabaseService } from '../services/genericDatabaseService';
+import { useDataSync } from '../hooks/useDataSync';
+import { geminiService } from '../services/geminiService';
+
 import { useLocalization } from '../contexts/LocalizationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Invoice, Expense, Receipt, RecurringInvoice, RecurringExpense, RecurrenceFrequency, Budget, Project, BudgetLine, BudgetItem } from '../types';
+import { geminiService } from '../services/geminiService';
 import ConfirmationModal from './common/ConfirmationModal';
 
 const statusStyles: { [key in Invoice['status']]: string } = {
@@ -10,6 +16,326 @@ const statusStyles: { [key in Invoice['status']]: string } = {
     'Paid': 'bg-emerald-200 text-emerald-800',
     'Overdue': 'bg-red-200 text-red-800',
     'Partially Paid': 'bg-yellow-200 text-yellow-800',
+};
+
+// Fonctions utilitaires pour SENEGEL
+const formatFCFA = (amount: number): string => {
+    return new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'XOF',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(amount);
+};
+
+const convertToFCFA = (usdAmount: number, exchangeRate: number = 600): number => {
+    return Math.round(usdAmount * exchangeRate);
+};
+
+const convertFromFCFA = (fcfaAmount: number, exchangeRate: number = 600): number => {
+    return fcfaAmount / exchangeRate;
+};
+
+// Sous-module : Analyse financière intelligente
+const FinancialAnalysisCard: React.FC<{
+    invoices: Invoice[];
+    expenses: Expense[];
+    budgets: Budget[];
+}> = ({ invoices, expenses, budgets }) => {
+    const { t } = useLocalization();
+    const [analysis, setAnalysis] = useState<string>('');
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const generateAnalysis = async () => {
+            setLoading(true);
+            const financialData = {
+                totalRevenue: invoices.filter(inv => inv.status === 'Paid').reduce((sum, inv) => sum + inv.amount, 0),
+                totalExpenses: expenses.reduce((sum, exp) => sum + exp.amount, 0),
+                outstandingInvoices: invoices.filter(inv => inv.status === 'Sent' || inv.status === 'Overdue').length,
+                budgetUtilization: budgets.map(budget => {
+                    const spent = expenses.filter(exp => exp.budgetItemId && budget.budgetLines.some(line => line.items.some(item => item.id === exp.budgetItemId))).reduce((sum, exp) => sum + exp.amount, 0);
+                    return { name: budget.title, spent, total: budget.amount, utilization: budget.amount > 0 ? (spent / budget.amount) * 100 : 0 };
+                })
+            };
+
+            const aiAnalysis = await geminiService.analyzeData([financialData], 'insights');
+            setAnalysis(aiAnalysis);
+            setLoading(false);
+        };
+
+        generateAnalysis();
+    }, [invoices, expenses, budgets]);
+
+    
+  // Gestionnaires d'événements pour les boutons
+  const handleButtonClick = (action: string) => {
+    console.log('Action:', action);
+    // Logique spécifique selon l'action
+  };
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Formulaire soumis');
+    // Logique de soumission
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    console.log('Changement:', name, value);
+    // Logique de changement
+  };
+
+  
+  // Gestionnaires d'événements complets
+  const handleCreate = async (data: any) => {
+    try {
+      const result = await genericDatabaseService.create('finance', data);
+      console.log('Creation reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur creation:', error);
+    }
+  };
+  
+  const handleEdit = async (id: number, data: any) => {
+    try {
+      const result = await genericDatabaseService.update('finance', id, data);
+      console.log('Modification reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur modification:', error);
+    }
+  };
+  
+  const handleDelete = async (id: number) => {
+    try {
+      const result = await genericDatabaseService.delete('finance', id);
+      console.log('Suppression reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
+  };
+  
+  const handleExport = async () => {
+    try {
+      const data = await genericDatabaseService.getAll('finance');
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'finance_export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur export:', error);
+    }
+  };
+  
+  const handleImport = async (file: File) => {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await databaseService.bulkCreate('finance', data);
+      console.log('Import reussi');
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur import:', error);
+    }
+  };
+  
+  const handleApprove = async (id: number) => {
+    try {
+      const result = await databaseService.update('finance', id, { status: 'approved' });
+      console.log('Approbation reussie:', result);
+    } catch (error) {
+      console.error('Erreur approbation:', error);
+    }
+  };
+  
+  const handleReject = async (id: number) => {
+    try {
+      const result = await databaseService.update('finance', id, { status: 'rejected' });
+      console.log('Rejet reussi:', result);
+    } catch (error) {
+      console.error('Erreur rejet:', error);
+    }
+  };
+  
+  const handleCancel = () => {
+    console.log('Action annulée');
+    // Fermer les modals ou réinitialiser
+  };
+  
+  const handleSave = async (data: any) => {
+    try {
+      const result = await databaseService.createOrUpdate('finance', data);
+      console.log('Sauvegarde reussie:', result);
+    } catch (error) {
+      console.error('Erreur sauvegarde:', error);
+    }
+  };
+  
+  const handleAdd = async (data: any) => {
+    try {
+      const result = await databaseService.create('finance', data);
+      console.log('Ajout reussi:', result);
+    } catch (error) {
+      console.error('Erreur ajout:', error);
+    }
+  };
+  
+  const handleRemove = async (id: number) => {
+    try {
+      const result = await databaseService.delete('finance', id);
+      console.log('Suppression reussie:', result);
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
+  };
+
+  return (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">📊 Analyse Financière IA</h3>
+            {loading ? (
+                <div className="flex justify-center items-center py-8">
+                    <i className="fas fa-spinner fa-spin text-2xl text-emerald-500"></i>
+                </div>
+            ) : analysis ? (
+                <div className="prose prose-sm max-w-none">
+                    <p className="text-gray-600 whitespace-pre-line">{analysis}</p>
+                </div>
+            ) : (
+                <p className="text-gray-500">Génération de l'analyse en cours...</p>
+            )}
+        </div>
+    );
+};
+
+// Sous-module : Recommandations financières
+const FinancialRecommendationsCard: React.FC<{
+    invoices: Invoice[];
+    expenses: Expense[];
+    budgets: Budget[];
+}> = ({ invoices, expenses, budgets }) => {
+    const { t } = useLocalization();
+    const [recommendations, setRecommendations] = useState<string[]>([]);
+
+    useEffect(() => {
+        const generateRecommendations = () => {
+            const newRecommendations: string[] = [];
+            
+            // Analyse des factures en retard
+            const overdueInvoices = invoices.filter(inv => {
+                const today = new Date();
+                const dueDate = new Date(inv.dueDate);
+                return inv.status !== 'Paid' && dueDate < today;
+            });
+            
+            if (overdueInvoices.length > 0) {
+                newRecommendations.push(`🚨 ${overdueInvoices.length} facture(s) en retard - Envoyez des relances automatiques`);
+            }
+
+            // Analyse des budgets dépassés
+            const overBudget = budgets.filter(budget => {
+                const spent = expenses.filter(exp => exp.budgetItemId && budget.budgetLines.some(line => line.items.some(item => item.id === exp.budgetItemId))).reduce((sum, exp) => sum + exp.amount, 0);
+                return spent > budget.amount;
+            });
+            
+            if (overBudget.length > 0) {
+                newRecommendations.push(`⚠️ ${overBudget.length} budget(s) dépassé(s) - Révision nécessaire`);
+            }
+
+            // Analyse des dépenses récurrentes
+            const recurringExpenses = expenses.filter(exp => exp.category === 'Utilities' || exp.category === 'Software');
+            if (recurringExpenses.length > 5) {
+                newRecommendations.push(`💡 ${recurringExpenses.length} dépenses récurrentes détectées - Créez des budgets automatiques`);
+            }
+
+            // Analyse de la trésorerie
+            const totalRevenue = invoices.filter(inv => inv.status === 'Paid').reduce((sum, inv) => sum + inv.amount, 0);
+            const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+            const cashFlow = totalRevenue - totalExpenses;
+            
+            if (cashFlow < 0) {
+                newRecommendations.push(`📉 Trésorerie négative (${formatFCFA(Math.abs(cashFlow))}) - Optimisez les encaissements`);
+            } else if (cashFlow > 1000000) {
+                newRecommendations.push(`💰 Excédent de trésorerie (${formatFCFA(cashFlow)}) - Considérez des investissements`);
+            }
+
+            setRecommendations(newRecommendations);
+        };
+
+        generateRecommendations();
+    }, [invoices, expenses, budgets]);
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">💡 Recommandations SENEGEL</h3>
+            <div className="space-y-3">
+                {recommendations.length > 0 ? (
+                    recommendations.map((rec, index) => (
+                        <div key={index} className="p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                            <p className="text-sm text-gray-700">{rec}</p>
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center py-4">
+                        <i className="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+                        <p className="text-sm text-gray-500">Aucune recommandation urgente</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Sous-module : Tableau de bord FCFA
+const FCFADashboardCard: React.FC<{
+    invoices: Invoice[];
+    expenses: Expense[];
+}> = ({ invoices, expenses }) => {
+    const { t } = useLocalization();
+    
+    const metrics = useMemo(() => {
+        const totalRevenue = invoices.filter(inv => inv.status === 'Paid').reduce((sum, inv) => sum + inv.amount, 0);
+        const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const netIncome = totalRevenue - totalExpenses;
+        
+        return {
+            totalRevenue: convertToFCFA(totalRevenue),
+            totalExpenses: convertToFCFA(totalExpenses),
+            netIncome: convertToFCFA(netIncome),
+            outstandingInvoices: invoices.filter(inv => inv.status === 'Sent' || inv.status === 'Overdue').reduce((sum, inv) => sum + inv.amount, 0)
+        };
+    }, [invoices, expenses]);
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">💰 Tableau de Bord FCFA</h3>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{formatFCFA(metrics.totalRevenue)}</div>
+                    <div className="text-sm text-gray-500">Revenus totaux</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-2xl font-bold text-red-600">{formatFCFA(metrics.totalExpenses)}</div>
+                    <div className="text-sm text-gray-500">Dépenses totales</div>
+                </div>
+                <div className="text-center">
+                    <div className={`text-2xl font-bold ${metrics.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {formatFCFA(metrics.netIncome)}
+                    </div>
+                    <div className="text-sm text-gray-500">Résultat net</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-600">{formatFCFA(convertToFCFA(metrics.outstandingInvoices))}</div>
+                    <div className="text-sm text-gray-500">Factures en attente</div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 const StatCard: React.FC<{ title: string; value: string; icon: string; color: string }> = ({ title, value, icon, color }) => (
@@ -664,6 +990,44 @@ const Finance: React.FC<FinanceProps> = (props) => {
     const [activeTab, setActiveTab] = useState<'invoices' | 'expenses' | 'recurring' | 'budgets'>('invoices');
     const [activeRecurringTab, setActiveRecurringTab] = useState<'invoices' | 'expenses'>('invoices');
     
+    // Hook de synchronisation des données pour les factures
+    const {
+        data: syncedInvoices,
+        createWithSync: createInvoiceWithSync,
+        updateWithSync: updateInvoiceWithSync,
+        deleteWithSync: deleteInvoiceWithSync,
+        refreshData: refreshInvoices
+    } = useDataSync(
+        { table: 'invoices', autoRefresh: true },
+        invoices,
+        (newInvoices) => {
+            newInvoices.forEach(invoice => {
+                if (onUpdateInvoice) {
+                    onUpdateInvoice(invoice as Invoice);
+                }
+            });
+        }
+    );
+    
+    // Hook de synchronisation des données pour les dépenses
+    const {
+        data: syncedExpenses,
+        createWithSync: createExpenseWithSync,
+        updateWithSync: updateExpenseWithSync,
+        deleteWithSync: deleteExpenseWithSync,
+        refreshData: refreshExpenses
+    } = useDataSync(
+        { table: 'expenses', autoRefresh: true },
+        expenses,
+        (newExpenses) => {
+            newExpenses.forEach(expense => {
+                if (onUpdateExpense) {
+                    onUpdateExpense(expense as Expense);
+                }
+            });
+        }
+    );
+    
     const [isInvoiceModalOpen, setInvoiceModalOpen] = useState(false);
     const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);
     const [isBudgetModalOpen, setBudgetModalOpen] = useState(false);
@@ -818,13 +1182,25 @@ const Finance: React.FC<FinanceProps> = (props) => {
             <h1 className="text-3xl font-bold text-gray-800">{t('finance_title')}</h1>
             <p className="mt-1 text-gray-600">{t('finance_subtitle')}</p>
 
+            {/* Métriques principales avec FCFA */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <StatCard title={t('total_revenue')} value={`$${totalRevenue.toFixed(2)}`} icon="fas fa-arrow-up" color="text-green-500" />
-                <StatCard title={t('total_expenses')} value={`$${totalExpenses.toFixed(2)}`} icon="fas fa-arrow-down" color="text-red-500" />
-                <StatCard title={t('net_income')} value={`$${netIncome.toFixed(2)}`} icon="fas fa-dollar-sign" color="text-blue-500" />
-                <StatCard title={t('total_outstanding_invoices')} value={`$${totalOutstandingInvoices.toFixed(2)}`} icon="fas fa-file-invoice" color="text-orange-500" />
-                <StatCard title={t('total_due_expenses')} value={`$${totalDueExpenses.toFixed(2)}`} icon="fas fa-money-bill-wave" color="text-yellow-500" />
+                <StatCard title={t('total_revenue')} value={formatFCFA(convertToFCFA(totalRevenue))} icon="fas fa-arrow-up" color="text-green-500" />
+                <StatCard title={t('total_expenses')} value={formatFCFA(convertToFCFA(totalExpenses))} icon="fas fa-arrow-down" color="text-red-500" />
+                <StatCard title={t('net_income')} value={formatFCFA(convertToFCFA(netIncome))} icon="fas fa-dollar-sign" color="text-blue-500" />
+                <StatCard title={t('total_outstanding_invoices')} value={formatFCFA(convertToFCFA(totalOutstandingInvoices))} icon="fas fa-file-invoice" color="text-orange-500" />
+                <StatCard title={t('total_due_expenses')} value={formatFCFA(convertToFCFA(totalDueExpenses))} icon="fas fa-money-bill-wave" color="text-yellow-500" />
                 <StatCard title={t('average_payment_time')} value={averagePaymentTime !== null ? `${averagePaymentTime} ${t('days')}` : 'N/A'} icon="fas fa-hourglass-half" color="text-purple-500" />
+            </div>
+
+            {/* Sous-modules SENEGEL */}
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <FCFADashboardCard invoices={invoices} expenses={expenses} />
+                <FinancialRecommendationsCard invoices={invoices} expenses={expenses} budgets={budgets} />
+            </div>
+
+            {/* Analyse financière IA */}
+            <div className="mt-8">
+                <FinancialAnalysisCard invoices={invoices} expenses={expenses} budgets={budgets} />
             </div>
 
             <div className="mt-8">
@@ -878,9 +1254,9 @@ const Finance: React.FC<FinanceProps> = (props) => {
                                                 <td className="px-6 py-4">{inv.clientName}</td>
                                                 <td className="px-6 py-4">
                                                     {inv.status === 'Partially Paid' ? (
-                                                        <span>${(inv.paidAmount || 0).toFixed(2)} / ${inv.amount.toFixed(2)}</span>
+                                                        <span>{formatFCFA(convertToFCFA(inv.paidAmount || 0))} / {formatFCFA(convertToFCFA(inv.amount))}</span>
                                                     ) : (
-                                                        <span>${inv.amount.toFixed(2)}</span>
+                                                        <span>{formatFCFA(convertToFCFA(inv.amount))}</span>
                                                     )}
                                                 </td>
                                                 <td className={`px-6 py-4 ${finalStatus === 'Overdue' ? 'font-bold text-red-600' : ''}`}>{inv.dueDate}</td>
@@ -944,7 +1320,7 @@ const Finance: React.FC<FinanceProps> = (props) => {
                                         </td>
                                         <td className="px-6 py-4">{exp.date}</td>
                                         <td className="px-6 py-4 font-medium text-gray-900">{exp.description}</td>
-                                        <td className="px-6 py-4">${exp.amount.toFixed(2)}</td>
+                                        <td className="px-6 py-4">{formatFCFA(convertToFCFA(exp.amount))}</td>
                                         <td className="px-6 py-4">{exp.dueDate || 'N/A'}</td>
                                          <td className="px-6 py-4">
                                             {exp.receipt ? (

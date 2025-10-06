@@ -1,272 +1,173 @@
-# 🚀 EcosystIA - Plateforme de Gestion d'Entreprise
-
-[![Django](https://img.shields.io/badge/Django-5.0.8-green.svg)](https://djangoproject.com/)
-[![React](https://img.shields.io/badge/React-19.1.0-blue.svg)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-blue.svg)](https://www.typescriptlang.org/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+# 🚀 EcosystIA - Plateforme de Gestion Intelligente
 
 ## 📋 Description
+**EcosystIA** est la plateforme de gestion intelligente développée par **IMPULCIA AFRIQUE** pour **SENEGEL** (Senegalese Next Generation of Leaders).
 
-**EcosystIA** est une plateforme complète de gestion d'entreprise intégrant l'intelligence artificielle pour optimiser les processus métier. Cette solution full-stack combine un backend Django robuste avec un frontend React moderne.
+## 🎯 Mission
+Fournir une solution complète de gestion d'entreprise avec IA intégrée, adaptée au contexte sénégalais et aux besoins de SENEGEL.
 
 ## ✨ Fonctionnalités Principales
 
+### 📊 Modules Core
+- **Dashboard** - Vue d'ensemble et KPIs
+- **Projects** - Gestion de projets avancée
+- **Goals/OKRs** - Objectifs et résultats clés
+- **CRM & Sales** - Relation client et ventes
+
+### 🎓 Formation & Développement
+- **Courses** - LMS complet avec certifications
+- **Jobs** - Gestion des emplois et recrutement
+- **Time Tracking** - Suivi du temps et productivité
+- **Leave Management** - Gestion des congés
+
+### 💰 Gestion Financière
+- **Finance** - Comptabilité complète en FCFA
+- **Analytics** - Analyses et rapports avancés
+- **Knowledge Base** - Base de connaissances
+
 ### 🤖 Intelligence Artificielle
-- **Assistant IA intégré** avec Google Gemini
-- **Coaching personnel** basé sur l'IA
-- **Analyses prédictives** pour la prise de décision
-- **Génération automatique** de contenu
+- **AI Coach** - Assistant IA contextuel (ARVA)
+- **Gen AI Lab** - Laboratoire de création IA
+- **Development** - Outils de développement
 
-### 👥 Gestion des Utilisateurs
-- **Authentification sécurisée** avec JWT
-- **Gestion des rôles** et permissions
-- **Profils utilisateurs** personnalisables
-- **Système de notifications** en temps réel
+### ⚙️ Administration
+- **User Management** - Gestion des utilisateurs
+- **Settings** - Configuration système
+- **Tools** - Outils intégrés
 
-### 📊 Modules Métier
-- **CRM** - Gestion de la relation client
-- **Projets** - Suivi et gestion des projets
-- **Finance** - Comptabilité et facturation
-- **Formations** - Gestion des cours et certifications
-- **Emplois** - Gestion des offres et candidatures
-- **Objectifs** - Suivi OKR et KPI
-- **Temps** - Suivi du temps de travail
-- **Congés** - Gestion des absences
-- **Réunions** - Planification et suivi
+## 🛠️ Technologies
 
-### 🔧 Fonctionnalités Techniques
-- **API REST** complète avec documentation
-- **WebSocket** pour les mises à jour temps réel
-- **Upload de fichiers** sécurisé
-- **Cache Redis** pour les performances
-- **Tâches asynchrones** avec Celery
-- **Monitoring** et logging avancés
+### Frontend
+- **React 19** + TypeScript
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **Context API** - State management
 
-## 🏗️ Architecture
+### Backend
+- **Supabase** - Backend-as-a-Service
+- **PostgreSQL** - Base de données
+- **Row Level Security** - Sécurité avancée
+- **JWT + OAuth2** - Authentification
 
-```
-SENEGEL-WorkFlow/
-├── backend/                 # API Django
-│   ├── apps/               # Modules métier
-│   ├── ecosystia/         # Configuration Django
-│   ├── docker-compose.yml # Orchestration Docker
-│   └── Dockerfile         # Image Docker
-├── components/            # Composants React
-├── services/             # Services API
-├── contexts/             # Contextes React
-├── hooks/               # Hooks personnalisés
-└── utils/               # Utilitaires
-```
+### IA & Intégrations
+- **Gemini AI** - Intelligence artificielle
+- **DeepSeek-R1** - Raisonnement avancé
+- **Multi-langue** - FR, WO, EN, AR
+- **Devise FCFA** - Adaptation locale
 
-## 🚀 Installation Rapide
-
-### Prérequis
-- **Node.js** 18+ et npm
-- **Python** 3.11+
-- **PostgreSQL** 15+
-- **Redis** 7+
-- **Docker** (optionnel)
-
-### 🐳 Déploiement Docker (Recommandé)
+## 🚀 Installation
 
 ```bash
 # Cloner le projet
-git clone https://github.com/Cherif0104/EcosystIA-django.git
-cd EcosystIA-django
+git clone https://github.com/impulcia-afrique/ecosystia.git
 
-# Démarrer avec Docker
-cd backend
-docker-compose up -d
-
-# Votre application sera disponible sur :
-# - Frontend: http://localhost:5173
-# - Backend API: http://localhost:8000
-# - Documentation: http://localhost:8000/api/docs/
-```
-
-### 💻 Installation Manuelle
-
-#### Backend Django
-```bash
-cd backend
-
-# Créer l'environnement virtuel
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# ou
-venv\Scripts\activate     # Windows
-
-# Installer les dépendances
-pip install -r requirements.txt
-
-# Configuration
-cp env.example .env
-# Éditer .env avec vos paramètres
-
-# Migrations
-python manage.py migrate
-
-# Créer un superutilisateur
-python manage.py createsuperuser
-
-# Démarrer le serveur
-python manage.py runserver
-```
-
-#### Frontend React
-```bash
 # Installer les dépendances
 npm install
 
-# Configuration
-cp config.env.example config.env
-# Éditer config.env avec vos paramètres
+# Configurer les variables d'environnement
+cp env.example .env.local
+# Éditer .env.local avec vos clés
 
-# Démarrer le serveur de développement
+# Lancer l'application
 npm run dev
 ```
 
-## ⚙️ Configuration
+## 📋 Configuration Requise
 
 ### Variables d'Environnement
-
-#### Backend (.env)
 ```env
-# Django
-DEBUG=True
-SECRET_KEY=your-secret-key
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-# Base de données
-DATABASE_URL=postgresql://user:password@localhost:5432/ecosystia
-
-# Redis
-REDIS_URL=redis://localhost:6379/0
-
-# Email
-EMAIL_HOST=smtp.gmail.com
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-
-# AI
-GEMINI_API_KEY=your-gemini-api-key
-OPENAI_API_KEY=your-openai-api-key
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_GEMINI_API_KEY=your_gemini_api_key
 ```
 
-#### Frontend (config.env)
-```env
-VITE_API_URL=http://localhost:8000/api
-VITE_GEMINI_API_KEY=your-gemini-api-key
-```
+### Base de Données Supabase
+- Table `users` avec RLS activé
+- Table `system_logs` pour l'audit
+- Politiques de sécurité par rôle
 
-## 📚 Documentation API
+## 🎯 Utilisation
 
-- **Swagger UI**: http://localhost:8000/api/docs/
-- **ReDoc**: http://localhost:8000/api/redoc/
-- **Schema**: http://localhost:8000/api/schema/
+### Rôles Utilisateur
+- **Super Admin** - Accès complet
+- **Admin** - Gestion des modules
+- **Manager** - Gestion d'équipe
+- **User** - Utilisation standard
+- **Viewer** - Consultation seule
 
-## 🧪 Tests
+### Modules Principaux
+1. **Dashboard** - Centre de contrôle
+2. **Projects** - Gestion de projets
+3. **Goals** - Objectifs et OKRs
+4. **CRM** - Relation client
+5. **Courses** - Formation
+6. **Finance** - Gestion financière
+7. **AI Coach** - Assistant IA
 
-```bash
-# Tests Backend
-cd backend
-python -m pytest
+## 📊 Fonctionnalités Avancées
 
-# Tests Frontend
-npm run test
+### Intelligence Artificielle
+- **ARVA** - Assistant contextuel
+- **Recommandations** - Actions suggérées
+- **Génération de contenu** - Texte, images
+- **Analyse prédictive** - Insights avancés
 
-# Tests d'intégration
-npm run test:integration
-```
+### Sécurité
+- **RLS** - Row Level Security
+- **Audit Trail** - Logs complets
+- **Chiffrement** - Données sensibles
+- **Conformité** - RGPD, ISO 27001
 
-## 📦 Déploiement Production
+### Performance
+- **Temps de chargement** < 2 secondes
+- **Disponibilité** > 99.9%
+- **Scalabilité** - 1000+ utilisateurs
+- **Responsive** - Mobile-first
 
-### 🚀 Railway (No-Code)
-1. Connectez votre GitHub à [Railway](https://railway.app)
-2. Sélectionnez ce repository
-3. Railway détecte automatiquement Docker
-4. Configurez les variables d'environnement
-5. Déployez en 1 clic !
+## 🌍 Adaptation Locale
 
-### ☁️ AWS/GCP/Azure
-```bash
-# Build de l'image Docker
-docker build -t ecosystia-backend ./backend
+### Sénégal
+- **Devise FCFA** - Formatage automatique
+- **Langues** - Français, Wolof, Anglais, Arabe
+- **Culture** - Contexte sénégalais
+- **Réglementation** - Conformité locale
 
-# Déploiement avec Kubernetes
-kubectl apply -f k8s/
-```
-
-### 🖥️ VPS
-```bash
-# Utiliser les scripts fournis
-./backend/start.sh    # Linux/Mac
-backend/start.bat     # Windows
-```
-
-## 🔒 Sécurité
-
-- ✅ **HTTPS** obligatoire en production
-- ✅ **JWT** sécurisé avec refresh tokens
-- ✅ **Rate limiting** sur les APIs
-- ✅ **CORS** configuré
-- ✅ **Validation** des données
-- ✅ **Logs** de sécurité
-- ✅ **Headers** de sécurité
-
-## 📊 Monitoring
-
-- **Health Check**: `/health/`
-- **Metrics**: Intégration Prometheus
-- **Logs**: Centralisés avec Sentry
-- **Performance**: Monitoring Redis et DB
-
-## 🤝 Contribution
-
-1. Fork le projet
-2. Créez une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une Pull Request
-
-## 📝 Changelog
-
-### Version 1.0.0
-- ✅ Backend Django complet
-- ✅ Frontend React avec TypeScript
-- ✅ Intégration IA (Google Gemini)
-- ✅ Modules métier complets
-- ✅ API REST documentée
-- ✅ Docker ready
-- ✅ Tests automatisés
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-## 👥 Équipe
-
-- **Développeur Principal**: Cherif0104
-- **Architecture**: Full-stack avec IA
-- **Technologies**: Django, React, TypeScript, Docker
+### SENEGEL
+- **Mission** - Développement des jeunes
+- **Programmes** - COYA, Habitat, Formation
+- **Équipe** - Pape Samb, Amadou Dia LY, etc.
+- **Contact** - Dakar, Sénégal
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/Cherif0104/EcosystIA-django/issues)
-- **Documentation**: [Wiki](https://github.com/Cherif0104/EcosystIA-django/wiki)
-- **Email**: support@ecosystia.org
+**IMPULCIA AFRIQUE**
+- **Email** : contact@impulcia-afrique.com
+- **Téléphone** : +221 78 832 40 69
+- **Site** : https://www.impulcia-afrique.com
 
-## 🌟 Fonctionnalités à Venir
+**SENEGEL**
+- **Email** : contact@senegel.org
+- **Téléphone** : +221 77 853 33 99
+- **Adresse** : Liberte 5, No 5486B, 4eme #10, Dakar
 
-- [ ] **Mobile App** (React Native)
-- [ ] **Analytics** avancées
-- [ ] **Intégrations** tierces (Slack, Teams)
-- [ ] **Multi-tenant** architecture
-- [ ] **IA** prédictive avancée
+## 📄 Licence
+
+Propriétaire - IMPULCIA AFRIQUE pour SENEGEL
+
+## 🚀 Déploiement
+
+### Production
+```bash
+npm run build
+# Déployer le dossier dist/ sur votre VPS
+```
+
+### VPS Configuration
+- **Nginx** - Serveur web
+- **SSL** - Certificats HTTPS
+- **Domain** - ecosystia.senegel.org
+- **Monitoring** - Logs et métriques
 
 ---
 
-<div align="center">
-  <strong>🚀 Développé avec ❤️ par l'équipe EcosystIA</strong>
-</div>
+**EcosystIA - L'avenir de la gestion d'entreprise au Sénégal** 🇸🇳

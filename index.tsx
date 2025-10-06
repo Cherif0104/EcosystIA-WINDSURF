@@ -2,7 +2,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-// CSS via CDN dans index.html
+import { AuthProvider } from './contexts/AuthContext';
+import { LocalizationProvider } from './contexts/LocalizationContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -12,6 +13,10 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <LocalizationProvider>
+        <App />
+      </LocalizationProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { databaseService } from '../services/databaseService';
+import { geminiService } from '../services/geminiService';
+
 import { useLocalization } from '../contexts/LocalizationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Language } from '../types';
@@ -25,6 +28,134 @@ const Settings: React.FC<SettingsProps> = ({ reminderDays, onSetReminderDays }) 
 
   const handleRemoveSkill = (skillToRemove: string) => {
     setSkills(skills.filter(skill => skill !== skillToRemove));
+  };
+
+  
+  // Gestionnaires d'événements pour les boutons
+  const handleButtonClick = (action: string) => {
+    console.log('Action:', action);
+    // Logique spécifique selon l'action
+  };
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Formulaire soumis');
+    // Logique de soumission
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    console.log('Changement:', name, value);
+    // Logique de changement
+  };
+
+  
+  // Gestionnaires d'événements complets
+  const handleCreate = async (data: any) => {
+    try {
+      const result = await databaseService.create('settings', data);
+      console.log('Creation reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur creation:', error);
+    }
+  };
+  
+  const handleEdit = async (id: number, data: any) => {
+    try {
+      const result = await databaseService.update('settings', id, data);
+      console.log('Modification reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur modification:', error);
+    }
+  };
+  
+  const handleDelete = async (id: number) => {
+    try {
+      const result = await databaseService.delete('settings', id);
+      console.log('Suppression reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
+  };
+  
+  const handleExport = async () => {
+    try {
+      const data = await databaseService.getAll('settings');
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'settings_export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur export:', error);
+    }
+  };
+  
+  const handleImport = async (file: File) => {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await databaseService.bulkCreate('settings', data);
+      console.log('Import reussi');
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur import:', error);
+    }
+  };
+  
+  const handleApprove = async (id: number) => {
+    try {
+      const result = await databaseService.update('settings', id, { status: 'approved' });
+      console.log('Approbation reussie:', result);
+    } catch (error) {
+      console.error('Erreur approbation:', error);
+    }
+  };
+  
+  const handleReject = async (id: number) => {
+    try {
+      const result = await databaseService.update('settings', id, { status: 'rejected' });
+      console.log('Rejet reussi:', result);
+    } catch (error) {
+      console.error('Erreur rejet:', error);
+    }
+  };
+  
+  const handleCancel = () => {
+    console.log('Action annulée');
+    // Fermer les modals ou réinitialiser
+  };
+  
+  const handleSave = async (data: any) => {
+    try {
+      const result = await databaseService.createOrUpdate('settings', data);
+      console.log('Sauvegarde reussie:', result);
+    } catch (error) {
+      console.error('Erreur sauvegarde:', error);
+    }
+  };
+  
+  const handleAdd = async (data: any) => {
+    try {
+      const result = await databaseService.create('settings', data);
+      console.log('Ajout reussi:', result);
+    } catch (error) {
+      console.error('Erreur ajout:', error);
+    }
+  };
+  
+  const handleRemove = async (id: number) => {
+    try {
+      const result = await databaseService.delete('settings', id);
+      console.log('Suppression reussie:', result);
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
   };
 
   return (

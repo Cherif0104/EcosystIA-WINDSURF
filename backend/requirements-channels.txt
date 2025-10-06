@@ -1,8 +1,0 @@
-# Dépendances pour Django Channels et WebSocket
-channels==4.0.0
-channels-redis==4.1.0
-daphne==4.0.0
-
-# Upload de fichiers et validation
-Pillow==10.0.1
-python-magic==0.4.27

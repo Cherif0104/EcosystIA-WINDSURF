@@ -1,5 +1,10 @@
 
 import React, { useState } from 'react';
+import { databaseService } from '../services/databaseService';
+import { genericDatabaseService } from '../services/genericDatabaseService';
+import { useDataSync } from '../hooks/useDataSync';
+import { geminiService } from '../services/geminiService';
+
 import { useLocalization } from '../contexts/LocalizationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Document } from '../types';
@@ -15,6 +20,26 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({ documents, onAddDocument 
     const { user } = useAuth();
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
+    
+    // Hook de synchronisation des données
+    const {
+        data: syncedDocuments,
+        createWithSync,
+        updateWithSync,
+        deleteWithSync,
+        refreshData
+    } = useDataSync(
+        { table: 'documents', autoRefresh: true },
+        documents,
+        (newDocuments) => {
+            // Mettre à jour les documents dans le parent
+            newDocuments.forEach(doc => {
+                if (onAddDocument) {
+                    onAddDocument(doc as Document);
+                }
+            });
+        }
+    );
 
     const handleSummarize = async () => {
         if (!inputText.trim() || !user) return;
@@ -34,7 +59,135 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({ documents, onAddDocument 
         setLoading(false);
     };
 
-    return (
+    
+  // Gestionnaires d'événements pour les boutons
+  const handleButtonClick = (action: string) => {
+    console.log('Action:', action);
+    // Logique spécifique selon l'action
+  };
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Formulaire soumis');
+    // Logique de soumission
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    console.log('Changement:', name, value);
+    // Logique de changement
+  };
+
+  
+  // Gestionnaires d'événements complets
+  const handleCreate = async (data: any) => {
+    try {
+      const result = await databaseService.create('knowledgebase', data);
+      console.log('Creation reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur creation:', error);
+    }
+  };
+  
+  const handleEdit = async (id: number, data: any) => {
+    try {
+      const result = await databaseService.update('knowledgebase', id, data);
+      console.log('Modification reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur modification:', error);
+    }
+  };
+  
+  const handleDelete = async (id: number) => {
+    try {
+      const result = await databaseService.delete('knowledgebase', id);
+      console.log('Suppression reussie:', result);
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
+  };
+  
+  const handleExport = async () => {
+    try {
+      const data = await databaseService.getAll('knowledgebase');
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'knowledgebase_export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur export:', error);
+    }
+  };
+  
+  const handleImport = async (file: File) => {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await databaseService.bulkCreate('knowledgebase', data);
+      console.log('Import reussi');
+      // Rafraîchir les données
+    } catch (error) {
+      console.error('Erreur import:', error);
+    }
+  };
+  
+  const handleApprove = async (id: number) => {
+    try {
+      const result = await databaseService.update('knowledgebase', id, { status: 'approved' });
+      console.log('Approbation reussie:', result);
+    } catch (error) {
+      console.error('Erreur approbation:', error);
+    }
+  };
+  
+  const handleReject = async (id: number) => {
+    try {
+      const result = await databaseService.update('knowledgebase', id, { status: 'rejected' });
+      console.log('Rejet reussi:', result);
+    } catch (error) {
+      console.error('Erreur rejet:', error);
+    }
+  };
+  
+  const handleCancel = () => {
+    console.log('Action annulée');
+    // Fermer les modals ou réinitialiser
+  };
+  
+  const handleSave = async (data: any) => {
+    try {
+      const result = await genericDatabaseService.createOrUpdate('knowledgebase', data);
+      console.log('Sauvegarde reussie:', result);
+    } catch (error) {
+      console.error('Erreur sauvegarde:', error);
+    }
+  };
+  
+  const handleAdd = async (data: any) => {
+    try {
+      const result = await genericDatabaseService.create('knowledgebase', data);
+      console.log('Ajout reussi:', result);
+    } catch (error) {
+      console.error('Erreur ajout:', error);
+    }
+  };
+  
+  const handleRemove = async (id: number) => {
+    try {
+      const result = await genericDatabaseService.delete('knowledgebase', id);
+      console.log('Suppression reussie:', result);
+    } catch (error) {
+      console.error('Erreur suppression:', error);
+    }
+  };
+
+  return (
         <div>
             <h1 className="text-3xl font-bold text-gray-800">{t('knowledge_base_title')}</h1>
             <p className="mt-1 text-gray-600">{t('knowledge_base_subtitle')}</p>
